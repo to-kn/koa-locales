@@ -1,0 +1,26 @@
+stages:
+  - install
+  - build
+  - test
+
+default:
+  image: node:18
+
+install:
+  stage: install
+  script:
+    - npm ci
+
+build:
+  stage: build
+  script:
+    - npm run build || npx tsc
+  dependencies:
+    - install
+
+test:
+  stage: test
+  script:
+    - npm test
+  dependencies:
+    - build 

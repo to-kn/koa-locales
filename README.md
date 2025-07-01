@@ -1,6 +1,8 @@
 koa-locales
 =======
 
+**Now TypeScript-first!** Uses CommonJS, outputs to `dist/`, and is CI-tested on GitLab. Use the built output (`dist/index.js`) as the main entry point after running `npm run build`.
+
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![Test coverage][cov-image]][cov-url]
@@ -23,8 +25,8 @@ $ npm install koa-locales --save
 ## Quick start
 
 ```js
+const locales = require('./dist'); // after build
 const koa = require('koa');
-const locales = require('koa-locales');
 
 const app = koa();
 const options = {
@@ -164,25 +166,3 @@ With this line it only will show one line per request, with the chosen language 
 ```sh
 $ DEBUG=koa-locales:silly node .
 ```
-Use this level if something doesn't work as you expect. This is going to debug everything, including each translated line of text.
-
-## License
-
-[MIT](LICENSE)
-
-
-[nunjucks]: https://www.npmjs.com/package/nunjucks
-[debug]: https://www.npmjs.com/package/debug
-[pug]: https://www.npmjs.com/package/pug
-[koa-pug]: https://www.npmjs.com/package/koa-pug
-
-[npm-image]: https://img.shields.io/npm/v/koa-locales.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/koa-locales
-[travis-image]: https://img.shields.io/travis/koajs/locales.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koajs/locales
-[cov-image]: https://codecov.io/github/koajs/locales/coverage.svg?branch=master
-[cov-url]: https://codecov.io/github/koajs/locales?branch=master
-[david-image]: https://img.shields.io/david/koajs/locales.svg?style=flat-square
-[david-url]: https://david-dm.org/koajs/locales
-[download-image]: https://img.shields.io/npm/dm/koa-locales.svg?style=flat-square
-[download-url]: https://npmjs.org/package/koa-locales

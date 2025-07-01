@@ -1,57 +1,58 @@
-'use strict';
-
-const Benchmark = require('benchmark');
-const benchmarks = require('beautify-benchmark');
+const Benchmark = require("benchmark");
+const benchmarks = require("beautify-benchmark");
 
 const suite = new Benchmark.Suite();
 
 function endsWith(str) {
-  return str.endsWith('.properties');
+	return str.endsWith(".properties");
 }
 
 function indexOf(str) {
-  return str.indexOf('.properties') === str.length - 11;
+	return str.indexOf(".properties") === str.length - 11;
 }
 
 function regexp(str) {
-  return /\.properties$/.test(str);
+	return /\.properties$/.test(str);
 }
 
-console.log('true:');
-console.log('  endsWith: %j', endsWith('filename.properties'));
-console.log('  indexOf: %j', indexOf('filename.properties'));
-console.log('  regexp: %j', regexp('filename.properties'));
-console.log('false:');
-console.log('  endsWith: %j', endsWith('filename'));
-console.log('  indexOf: %j', indexOf('filename'));
-console.log('  regexp: %j', regexp('filename'));
+console.log("true:");
+console.log("  endsWith: %j", endsWith("filename.properties"));
+console.log("  indexOf: %j", indexOf("filename.properties"));
+console.log("  regexp: %j", regexp("filename.properties"));
+console.log("false:");
+console.log("  endsWith: %j", endsWith("filename"));
+console.log("  indexOf: %j", indexOf("filename"));
+console.log("  regexp: %j", regexp("filename"));
 
 suite
 
-.add('endsWith', function() {
-  endsWith('filename.properties');
-  endsWith('filename');
-})
-.add('indexOf', function() {
-  indexOf('filename.properties');
-  indexOf('filename');
-})
-.add('regexp', function() {
-  regexp('filename.properties');
-  regexp('filename');
-})
+	.add("endsWith", () => {
+		endsWith("filename.properties");
+		endsWith("filename");
+	})
+	.add("indexOf", () => {
+		indexOf("filename.properties");
+		indexOf("filename");
+	})
+	.add("regexp", () => {
+		regexp("filename.properties");
+		regexp("filename");
+	})
 
-.on('cycle', function(event) {
-  benchmarks.add(event.target);
-})
-.on('start', function() {
-  console.log('\n  endsWith Benchmark\n  node version: %s, date: %s\n  Starting...',
-    process.version, Date());
-})
-.on('complete', function done() {
-  benchmarks.log();
-})
-.run({ async: false });
+	.on("cycle", (event) => {
+		benchmarks.add(event.target);
+	})
+	.on("start", () => {
+		console.log(
+			"\n  endsWith Benchmark\n  node version: %s, date: %s\n  Starting...",
+			process.version,
+			Date(),
+		);
+	})
+	.on("complete", function done() {
+		benchmarks.log();
+	})
+	.run({ async: false });
 
 // true:
 //   endsWith: true

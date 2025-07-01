@@ -1,53 +1,60 @@
-'use strict';
-
-const Benchmark = require('benchmark');
-const benchmarks = require('beautify-benchmark');
+const Benchmark = require("benchmark");
+const benchmarks = require("beautify-benchmark");
 
 const suite = new Benchmark.Suite();
 
 function slice() {
-  return Array.prototype.slice.call(arguments);
+	return Array.prototype.slice.call(arguments);
 }
 
 function slice0() {
-  return Array.prototype.slice.call(arguments, 0);
+	return Array.prototype.slice.call(arguments, 0);
 }
 
 function forLoop() {
-  const args = new Array(arguments.length);
-  for(let i = 0; i < args.length; i++) {
-    args[i] = arguments[i];
-  }
-  return args;
+	const args = new Array(arguments.length);
+	for (let i = 0; i < args.length; i++) {
+		args[i] = arguments[i];
+	}
+	return args;
 }
 
-console.log('slice(0, 1, 2, 3, 4, 5, 6, 7): %j', slice(0, 1, 2, 3, 4, 5, 6, 7));
-console.log('slice0(0, 1, 2, 3, 4, 5, 6, 7): %j', slice0(0, 1, 2, 3, 4, 5, 6, 7));
-console.log('forLoop(0, 1, 2, 3, 4, 5, 6, 7): %j', forLoop(0, 1, 2, 3, 4, 5, 6, 7));
+console.log("slice(0, 1, 2, 3, 4, 5, 6, 7): %j", slice(0, 1, 2, 3, 4, 5, 6, 7));
+console.log(
+	"slice0(0, 1, 2, 3, 4, 5, 6, 7): %j",
+	slice0(0, 1, 2, 3, 4, 5, 6, 7),
+);
+console.log(
+	"forLoop(0, 1, 2, 3, 4, 5, 6, 7): %j",
+	forLoop(0, 1, 2, 3, 4, 5, 6, 7),
+);
 
 suite
 
-.add('Array.prototype.slice.call(arguments)', function() {
-  slice(0, 1, 2, 3, 4, 5, 6, 7);
-})
-.add('Array.prototype.slice.call(arguments, 0)', function() {
-  slice0(0, 1, 2, 3, 4, 5, 6, 7);
-})
-.add('for(let i = 0; i < args.length; i++) {}', function() {
-  forLoop(0, 1, 2, 3, 4, 5, 6, 7);
-})
+	.add("Array.prototype.slice.call(arguments)", () => {
+		slice(0, 1, 2, 3, 4, 5, 6, 7);
+	})
+	.add("Array.prototype.slice.call(arguments, 0)", () => {
+		slice0(0, 1, 2, 3, 4, 5, 6, 7);
+	})
+	.add("for(let i = 0; i < args.length; i++) {}", () => {
+		forLoop(0, 1, 2, 3, 4, 5, 6, 7);
+	})
 
-.on('cycle', function(event) {
-  benchmarks.add(event.target);
-})
-.on('start', function() {
-  console.log('\n  arguments to args Benchmark\n  node version: %s, date: %s\n  Starting...',
-    process.version, Date());
-})
-.on('complete', function done() {
-  benchmarks.log();
-})
-.run({ async: false });
+	.on("cycle", (event) => {
+		benchmarks.add(event.target);
+	})
+	.on("start", () => {
+		console.log(
+			"\n  arguments to args Benchmark\n  node version: %s, date: %s\n  Starting...",
+			process.version,
+			Date(),
+		);
+	})
+	.on("complete", function done() {
+		benchmarks.log();
+	})
+	.run({ async: false });
 
 // slice(0, 1, 2, 3, 4, 5, 6, 7): [0,1,2,3,4,5,6,7]
 // slice0(0, 1, 2, 3, 4, 5, 6, 7): [0,1,2,3,4,5,6,7]

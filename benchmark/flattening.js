@@ -1,174 +1,169 @@
-'use strict';
-
-const Benchmark = require('benchmark');
-const benchmarks = require('beautify-benchmark');
+const Benchmark = require("benchmark");
+const benchmarks = require("beautify-benchmark");
 
 const suite = new Benchmark.Suite();
 
 function isObject(obj) {
-  return Object.prototype.toString.call(obj) === '[object Object]';
+	return Object.prototype.toString.call(obj) === "[object Object]";
 }
 
 function flattening(data) {
+	const result = {};
 
-  const result = {};
+	function deepFlat(data, keys) {
+		Object.keys(data).forEach((key) => {
+			const value = data[key];
+			const k = keys ? key : keys + "." + key;
+			if (!isObject(value)) {
+				return (result[k] = String(value));
+			}
+			deepFlat(value, k);
+		});
+	}
 
-  function deepFlat (data, keys) {
-    Object.keys(data).forEach(function(key) {
-      const value = data[key];
-      const k = keys ? key : keys + '.' + key;
-      if (!isObject(value)) {
-        return result[k] = String(value);
-      }
-      deepFlat(value, k);
-    });
-  }
+	deepFlat(data, "");
 
-  deepFlat(data, '');
-
-  return result;
+	return result;
 }
 
 function flattening_1(data) {
+	const result = {};
 
-  const result = {};
+	function deepFlat(data, keys) {
+		Object.keys(data).forEach((key) => {
+			const value = data[key];
+			const k = keys.concat(key);
+			if (isObject(value)) {
+				deepFlat(value, k);
+			} else {
+				result[k.join(".")] = String(value);
+			}
+		});
+	}
 
-  function deepFlat (data, keys) {
-    Object.keys(data).forEach(function(key) {
-      const value = data[key];
-      const k = keys.concat(key);
-      if (isObject(value)) {
-        deepFlat(value, k);
-      } else {
-        result[k.join('.')] = String(value);
-      }
-    });
-  }
+	deepFlat(data, []);
 
-  deepFlat(data, []);
-
-  return result;
+	return result;
 }
 
 function flattening_2(data) {
+	const result = {};
 
-  const result = {};
+	function deepFlat(data, flatKey, key) {
+		const value = data[key];
+		if (isObject(value)) {
+			Object.keys(value).forEach((k) => {
+				deepFlat(value, flatKey + "." + k, k);
+			});
+		} else {
+			result[flatKey] = String(value);
+		}
+	}
 
-  function deepFlat (data, flatKey, key) {
-    const value = data[key];
-    if (isObject(value)) {
-      Object.keys(value).forEach(function(k) {
-        deepFlat(value, flatKey + '.' + k, k);
-      });
-    } else {
-      result[flatKey] = String(value);
-    }
-  }
-
-  Object.keys(data).forEach(function(key) {
-    deepFlat(data, key, key);
-  });
-  return result;
+	Object.keys(data).forEach((key) => {
+		deepFlat(data, key, key);
+	});
+	return result;
 }
 
 const resource = {
-  'model.user.foo.bar.aa': 'Hello',
-  model: {
-    user: {
-      fields: {
-        name: 'Real Name',
-        age: 'Age',
-        a: {
-          b: {
-            c: {
-              d: {
-                e: {
-                  f: 'fff',
-                },
-              },
-              model: {
-                user: {
-                  fields: {
-                    name: 'Real Name',
-                    age: 'Age',
-                    a: {
-                      b: {
-                        c: {
-                          d: {
-                            e: {
-                              f: 'fff',
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                post: {
-                  fields: {
-                    title: 'Subject',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      model: {
-        user: {
-          fields: {
-            name: 'Real Name',
-            age: 'Age',
-            a: {
-              b: {
-                c: {
-                  d: {
-                    e: {
-                      f: 'fff',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          fields: {
-            title: 'Subject',
-          },
-        },
-      },
-    },
-    post: {
-      fields: {
-        title: 'Subject',
-      },
-    },
-    model: {
-      user: {
-        fields: {
-          name: 'Real Name',
-          age: 'Age',
-          a: {
-            b: {
-              c: {
-                d: {
-                  e: {
-                    f: 'fff',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      post: {
-        fields: {
-          title: 'Subject',
-        },
-      },
-    },
-  },
+	"model.user.foo.bar.aa": "Hello",
+	model: {
+		user: {
+			fields: {
+				name: "Real Name",
+				age: "Age",
+				a: {
+					b: {
+						c: {
+							d: {
+								e: {
+									f: "fff",
+								},
+							},
+							model: {
+								user: {
+									fields: {
+										name: "Real Name",
+										age: "Age",
+										a: {
+											b: {
+												c: {
+													d: {
+														e: {
+															f: "fff",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								post: {
+									fields: {
+										title: "Subject",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			model: {
+				user: {
+					fields: {
+						name: "Real Name",
+						age: "Age",
+						a: {
+							b: {
+								c: {
+									d: {
+										e: {
+											f: "fff",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				post: {
+					fields: {
+						title: "Subject",
+					},
+				},
+			},
+		},
+		post: {
+			fields: {
+				title: "Subject",
+			},
+		},
+		model: {
+			user: {
+				fields: {
+					name: "Real Name",
+					age: "Age",
+					a: {
+						b: {
+							c: {
+								d: {
+									e: {
+										f: "fff",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			post: {
+				fields: {
+					title: "Subject",
+				},
+			},
+		},
+	},
 };
 
 //console.log('flattening:', flattening(resource));
@@ -177,22 +172,22 @@ const resource = {
 
 suite
 
-.add('flattening', function() {
-  flattening(resource);
-})
-.add('flattening_1', function() {
-  flattening_1(resource);
-})
-.add('flattening_2', function() {
-  flattening_2(resource);
-})
-.on('cycle', function(event) {
-  benchmarks.add(event.target);
-})
-.on('complete', function done() {
-  benchmarks.log();
-})
-.run({ async: false });
+	.add("flattening", () => {
+		flattening(resource);
+	})
+	.add("flattening_1", () => {
+		flattening_1(resource);
+	})
+	.add("flattening_2", () => {
+		flattening_2(resource);
+	})
+	.on("cycle", (event) => {
+		benchmarks.add(event.target);
+	})
+	.on("complete", function done() {
+		benchmarks.log();
+	})
+	.run({ async: false });
 
 //$ node benchmark/flattening.js
 //
