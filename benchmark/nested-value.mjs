@@ -1,5 +1,7 @@
-const Benchmark = require("benchmark");
-const benchmarks = require("beautify-benchmark");
+#!/usr/bin/env node
+
+import benchmarks from "beautify-benchmark";
+import Benchmark from "benchmark";
 
 const suite = new Benchmark.Suite();
 

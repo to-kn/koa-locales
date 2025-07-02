@@ -1,38 +1,21 @@
-const Benchmark = require("benchmark");
-const benchmarks = require("beautify-benchmark");
-const util = require("util");
+#!/usr/bin/env node
+
+import util from "node:util";
+import benchmarks from "beautify-benchmark";
+import Benchmark from "benchmark";
 
 const suite = new Benchmark.Suite();
 
-function normal(text) {
-	if (arguments.length === 2) {
-		return util.format(text, arguments[1]);
-	} else if (arguments.length === 3) {
-		return util.format(text, arguments[1], arguments[2]);
-	} else if (arguments.length === 4) {
-		return util.format(text, arguments[1], arguments[2], arguments[3]);
-	} else if (arguments.length === 5) {
-		return util.format(
-			text,
-			arguments[1],
-			arguments[2],
-			arguments[3],
-			arguments[4],
-		);
-	}
+function normal(text, ...args) {
+	return util.format(text, ...args);
 }
 
-function apply() {
-	const args = Array.prototype.slice.call(arguments);
-	return util.format.apply(util, args);
+function apply(...args) {
+	return util.format(...args);
 }
 
-function apply2() {
-	const args = new Array(arguments.length);
-	for (let i = 0, l = arguments.length; i < l; i++) {
-		args[i] = arguments[i];
-	}
-	return util.format.apply(util, args);
+function apply2(...args) {
+	return util.format(...args);
 }
 
 console.log("normal(): %s", normal("this is %s.", "string"));

@@ -1,22 +1,24 @@
-const Benchmark = require("benchmark");
-const benchmarks = require("beautify-benchmark");
+#!/usr/bin/env node
+
+import benchmarks from "beautify-benchmark";
+import Benchmark from "benchmark";
 
 const suite = new Benchmark.Suite();
 
-function slice() {
-	return Array.prototype.slice.call(arguments);
+function slice(...args) {
+	return Array.prototype.slice.call(args);
 }
 
-function slice0() {
-	return Array.prototype.slice.call(arguments, 0);
+function slice0(...args) {
+	return Array.prototype.slice.call(args, 0);
 }
 
-function forLoop() {
-	const args = new Array(arguments.length);
-	for (let i = 0; i < args.length; i++) {
-		args[i] = arguments[i];
+function forLoop(...args) {
+	const arr = new Array(args.length);
+	for (let i = 0; i < arr.length; i++) {
+		arr[i] = args[i];
 	}
-	return args;
+	return arr;
 }
 
 console.log("slice(0, 1, 2, 3, 4, 5, 6, 7): %j", slice(0, 1, 2, 3, 4, 5, 6, 7));

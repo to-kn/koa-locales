@@ -1,9 +1,9 @@
-import assert from "assert";
+import assert from "node:assert";
 import Koa from "koa";
 import mm from "mm";
-import { pedding } from "pedding";
 import request from "supertest";
 import { afterEach, describe, expect, it } from "vitest";
+import type { LocalesOptions } from "../src";
 import locales from "../src";
 
 describe("koa-locales.test.js", () => {
@@ -81,17 +81,17 @@ describe("koa-locales.test.js", () => {
 
 	describe("custom options", () => {
 		const app = createApp({
-			dirs: [__dirname + "/locales", __dirname + "/other-locales"],
+			dirs: [`${__dirname}/locales`, `${__dirname}/other-locales`],
 		});
 		const cookieFieldMapApp = createApp({
-			dirs: [__dirname + "/locales", __dirname + "/other-locales"],
+			dirs: [`${__dirname}/locales`, `${__dirname}/other-locales`],
 			localeAlias: {
 				en: "en-US",
 				"de-de": "de",
 			},
 		});
 		const appNotWriteCookie = createApp({
-			dirs: [__dirname + "/locales", __dirname + "/other-locales"],
+			dirs: [`${__dirname}/locales`, `${__dirname}/other-locales`],
 			writeCookie: false,
 		});
 
@@ -540,10 +540,10 @@ describe("koa-locales.test.js", () => {
 });
 
 // @ts-ignore: legacy test expects any type for options
-function createApp(options?: any) {
+function createApp(options?: unknown) {
 	const app = new Koa();
-	locales(app, options);
-	const fname = (options && options.functionName) || "__";
+	locales(app, options as LocalesOptions);
+	const fname = (options as LocalesOptions)?.functionName || "__";
 
 	app.use(async (ctx, next) => {
 		if (ctx.url === "/app_locale_zh") {
@@ -588,7 +588,7 @@ function createApp(options?: any) {
 				"fengmk2",
 				18,
 			),
-			empty: ctx[fname](),
+			empty: ctx[fname]("empty"),
 			notexists_key: ctx[fname]("key not exists"),
 			empty_string: ctx[fname](""),
 			empty_value: ctx[fname]("emptyValue"),

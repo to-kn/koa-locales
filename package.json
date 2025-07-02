@@ -23,32 +23,32 @@
 		"autod": "autod -w --prefix '^'",
 		"contributors": "contributors -f plain -o AUTHORS"
 	},
-  "dependencies": {
-    "debug": "^4.4.1",
-    "humanize-ms": "^2.0.0",
-    "ini": "^5.0.0",
-    "js-yaml": "^4.1.0",
-    "koa": "^3.0.0",
-    "mm": "^4.0.2",
-    "supertest": "^7.1.1",
-    "vitest": "^3.2.4"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
-    "@types/debug": "^4.1.12",
-    "@types/ini": "^4.1.1",
-    "@types/js-yaml": "^4.0.9",
-    "@types/koa": "^2.15.0",
-    "@types/node": "^24.0.10",
-    "@types/supertest": "^6.0.3",
-    "@vitest/coverage-istanbul": "^3.2.4",
-    "@vitest/ui": "^3.2.4",
-    "beautify-benchmark": "^0.2.4",
-    "benchmark": "^2.1.4",
-    "pedding": "^2.0.1",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
-  },
+	"dependencies": {
+		"debug": "^4.4.1",
+		"humanize-ms": "^2.0.0",
+		"ini": "^5.0.0",
+		"js-yaml": "^4.1.0",
+		"koa": "^3.0.0",
+		"mm": "^4.0.2",
+		"supertest": "^7.1.1",
+		"vitest": "^3.2.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.0.6",
+		"@types/debug": "^4.1.12",
+		"@types/ini": "^4.1.1",
+		"@types/js-yaml": "^4.0.9",
+		"@types/koa": "^2.15.0",
+		"@types/node": "^24.0.10",
+		"@types/supertest": "^6.0.3",
+		"@vitest/coverage-istanbul": "^3.2.4",
+		"@vitest/ui": "^3.2.4",
+		"beautify-benchmark": "^0.2.4",
+		"benchmark": "^2.1.4",
+		"pedding": "^2.0.1",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
+	},
 	"homepage": "https://github.com/koajs/locales",
 	"repository": {
 		"type": "git",

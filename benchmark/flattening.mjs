@@ -1,5 +1,7 @@
-const Benchmark = require("benchmark");
-const benchmarks = require("beautify-benchmark");
+#!/usr/bin/env node
+
+import benchmarks from "beautify-benchmark";
+import Benchmark from "benchmark";
 
 const suite = new Benchmark.Suite();
 
@@ -13,9 +15,10 @@ function flattening(data) {
 	function deepFlat(data, keys) {
 		Object.keys(data).forEach((key) => {
 			const value = data[key];
-			const k = keys ? key : keys + "." + key;
+			const k = keys ? key : `${keys}.${key}`;
 			if (!isObject(value)) {
-				return (result[k] = String(value));
+				result[k] = String(value);
+				return;
 			}
 			deepFlat(value, k);
 		});
@@ -53,7 +56,7 @@ function flattening_2(data) {
 		const value = data[key];
 		if (isObject(value)) {
 			Object.keys(value).forEach((k) => {
-				deepFlat(value, flatKey + "." + k, k);
+				deepFlat(value, `${flatKey}.${k}`, k);
 			});
 		} else {
 			result[flatKey] = String(value);
@@ -97,11 +100,6 @@ const resource = {
 												},
 											},
 										},
-									},
-								},
-								post: {
-									fields: {
-										title: "Subject",
 									},
 								},
 							},
@@ -156,10 +154,10 @@ const resource = {
 						},
 					},
 				},
-			},
-			post: {
-				fields: {
-					title: "Subject",
+				post: {
+					fields: {
+						title: "Subject",
+					},
 				},
 			},
 		},

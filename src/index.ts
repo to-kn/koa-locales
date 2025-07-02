@@ -1,12 +1,12 @@
+import fs from "node:fs";
+import { createRequire } from "node:module";
+import path from "node:path";
+import util from "node:util";
 import Debug from "debug";
-import fs from "fs";
 import { ms } from "humanize-ms";
 import ini from "ini";
 import yaml from "js-yaml";
 import type Koa from "koa";
-import { createRequire } from "module";
-import path from "path";
-import util from "util";
 
 interface LocalesOptions {
 	defaultLocale?: string;
@@ -23,7 +23,11 @@ interface LocalesOptions {
 
 type Resource = Record<string, string>;
 
-type GettextFunction = (locale: string, key: string, ...args: any[]) => string;
+type GettextFunction = (
+	locale: string,
+	key: string,
+	...args: unknown[]
+) => string;
 
 declare module "koa" {
 	interface Context {
@@ -88,14 +92,14 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 			if (name.endsWith(".js")) {
 				const require = createRequire(import.meta.url);
 				const mod = require(filepath);
-				resource = flattening(mod.default || mod);
+				resource = flattening((mod.default || mod) as Record<string, unknown>);
 				appendDebugLog(
 					`Loaded JS resource for locale '${locale}' from: ${filepath}`,
 					resource,
 				);
 			} else if (name.endsWith(".json")) {
 				// @ts-ignore
-				resource = flattening(require(filepath));
+				resource = flattening(require(filepath) as Record<string, unknown>);
 				appendDebugLog(
 					`Loaded JSON resource for locale '${locale}' from: ${filepath}`,
 					resource,
@@ -107,7 +111,12 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 					resource,
 				);
 			} else if (name.endsWith(".yml") || name.endsWith(".yaml")) {
-				resource = flattening(yaml.load(fs.readFileSync(filepath, "utf8")));
+				resource = flattening(
+					yaml.load(fs.readFileSync(filepath, "utf8")) as Record<
+						string,
+						unknown
+					>,
+				);
 				appendDebugLog(
 					`Loaded YAML resource for locale '${locale}' from: ${filepath}`,
 					resource,
@@ -132,164 +141,147 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 		Object.keys(resources),
 	);
 
-	if (typeof (app as any)[functionName] !== "undefined") {
+	if (
+		typeof (app as unknown as Record<string, unknown>)[functionName] !==
+		"undefined"
+	) {
 		console.warn(
 			'[koa-locales] will override exists "%s" function on app',
 			functionName,
 		);
 	}
 
-	function gettext(locale: string, key: string, value?: any): string {
-		if (arguments.length === 0 || arguments.length === 1) {
-			// __()
-			// --('en')
-			return "";
-		}
+	function gettext(locale: string, key: string, ...args: unknown[]): string {
+		if (!key) return "";
 		const resource = resources[locale] || {};
 		let text = resource[key];
-		if (text === undefined) {
+		if (typeof text !== "string") {
 			text = key;
 		}
 		debugSilly("%s: %j => %j", locale, key, text);
-		if (!text) {
-			return "";
-		}
-		if (arguments.length === 2) {
+		if (args.length === 0) {
 			// __(locale, key)
 			return text;
 		}
-		if (arguments.length === 3) {
+		if (args.length === 1) {
+			const value = args[0];
 			if (isObject(value)) {
-				// __(locale, key, object)
-				// __('zh', '{a} {b} {b} {a}', {a: 'foo', b: 'bar'})
-				// =>
-				// foo bar bar foo
-				return formatWithObject(text, value);
+				return formatWithObject(text, value as Record<string, unknown>);
 			}
 			if (Array.isArray(value)) {
-				// __(locale, key, array)
-				// __('zh', '{0} {1} {1} {0}', ['foo', 'bar'])
-				// =>
-				// foo bar bar foo
-				return formatWithArray(text, value);
+				return formatWithArray(text, value as unknown[]);
 			}
-			// __(locale, key, value)
 			return util.format(text, value);
 		}
 		// __(locale, key, value1, ...)
-		const args = new Array(arguments.length - 1);
-		args[0] = text;
-		for (let i = 2; i < arguments.length; i++) {
-			args[i - 1] = arguments[i];
-		}
-		return util.format.apply(util, args);
+		return util.format(text, ...args);
 	}
 
-	(app as any)[functionName] = gettext;
-	(app.context as any)[functionName] = function (
-		key: string,
-		value?: any,
-	): string {
-		if (arguments.length === 0) {
-			// __()
-			return "";
-		}
-		const locale = this.__getLocale();
-		if (arguments.length === 1) {
-			return gettext(locale, key);
-		}
-		if (arguments.length === 2) {
-			return gettext(locale, key, value);
-		}
-		const args = new Array(arguments.length + 1);
-		args[0] = locale;
-		for (let i = 0; i < arguments.length; i++) {
-			args[i + 1] = arguments[i];
-		}
-		// @ts-expect-error: dynamic argument forwarding
-		return gettext(...args);
-	};
+	// Attach to app and context using proper Koa extension
+	(app as Koa & { [key: string]: unknown })[functionName] = gettext;
+	(app.context as Koa.Context & { [key: string]: unknown })[functionName] =
+		function (key: string, ...args: unknown[]): string {
+			const ctx = this as Koa.Context & { __getLocale?: () => string };
+			const locale = ctx.__getLocale ? ctx.__getLocale() : "";
+			return gettext(locale, key, ...args);
+		};
 
-	(app.context as any).__getLocale = function (): string {
-		if (this.__locale) {
-			return this.__locale;
-		}
-		const cookieLocale = this.cookies.get(cookieField, { signed: false });
-		// 1. Query
-		let locale = this.query[queryField];
-		let localeOrigin = "query";
-		// 2. Cookie
-		if (!locale) {
-			locale = cookieLocale;
-			localeOrigin = "cookie";
-		}
-		// 3. Header
-		if (!locale) {
-			let languages = this.acceptsLanguages();
-			if (languages) {
-				if (Array.isArray(languages)) {
-					if (languages[0] === "*") {
-						languages = languages.slice(1);
-					}
-					if (languages.length > 0) {
-						for (let i = 0; i < languages.length; i++) {
-							const lang = formatLocale(languages[i]);
-							if (resources[lang] || localeAlias[lang]) {
-								locale = lang;
-								localeOrigin = "header";
-								break;
-							}
-						}
-					}
-				} else {
-					locale = languages;
-					localeOrigin = "header";
-				}
+	(app.context as Koa.Context & { [key: string]: unknown }).__getLocale =
+		function (): string {
+			const ctx = this as Koa.Context & {
+				__locale?: string;
+				__localeOrigin?: string;
+			};
+			if (typeof ctx.__locale === "string" && ctx.__locale) {
+				return ctx.__locale;
+			}
+			const cookieLocale = ctx.cookies.get(cookieField, { signed: false });
+			let locale = ctx.query[queryField];
+			let localeOrigin = "query";
+			if (!locale) {
+				locale = cookieLocale;
+				localeOrigin = "cookie";
 			}
 			if (!locale) {
-				locale = defaultLocale;
-				localeOrigin = "default";
+				let languages = ctx.acceptsLanguages();
+				if (languages) {
+					if (Array.isArray(languages)) {
+						if (languages[0] === "*") {
+							languages = languages.slice(1);
+						}
+						if (languages.length > 0) {
+							for (let i = 0; i < languages.length; i++) {
+								const lang = formatLocale(String(languages[i]));
+								if (resources[lang] || localeAlias[lang]) {
+									locale = lang;
+									localeOrigin = "header";
+									break;
+								}
+							}
+						}
+					} else if (typeof languages === "string") {
+						locale = languages;
+						localeOrigin = "header";
+					}
+				}
+				if (!locale) {
+					locale = defaultLocale;
+					localeOrigin = "default";
+				}
 			}
-		}
-		if (locale && locale in localeAlias) {
-			const originalLocale = locale;
-			locale = localeAlias[locale];
-			debugSilly(
-				"Used alias, received %s but using %s",
-				originalLocale,
-				locale,
-			);
-		}
-		locale = formatLocale(locale || defaultLocale);
-		if (!resources[locale]) {
-			debugSilly(
-				"Locale %s is not supported. Using default (%s)",
-				locale,
-				defaultLocale,
-			);
-			locale = defaultLocale;
-		}
-		if (writeCookie && cookieLocale !== locale && !this.headerSent) {
-			updateCookie(this, locale);
-		}
-		debug("Locale: %s from %s", locale, localeOrigin);
-		debugSilly("Locale: %s from %s", locale, localeOrigin);
-		this.__locale = locale;
-		this.__localeOrigin = localeOrigin;
-		return locale;
-	};
+			if (locale && typeof locale !== "string") {
+				locale = String(locale);
+			}
+			if (locale && locale in localeAlias) {
+				const originalLocale = locale;
+				locale = localeAlias[locale];
+				debugSilly(
+					"Used alias, received %s but using %s",
+					originalLocale,
+					locale,
+				);
+			}
+			locale = formatLocale(locale || defaultLocale);
+			if (!resources[locale]) {
+				debugSilly(
+					"Locale %s is not supported. Using default (%s)",
+					locale,
+					defaultLocale,
+				);
+				locale = defaultLocale;
+			}
+			if (writeCookie && cookieLocale !== locale && !ctx.headerSent) {
+				updateCookie(ctx, locale);
+			}
+			debug("Locale: %s from %s", locale, localeOrigin);
+			debugSilly("Locale: %s from %s", locale, localeOrigin);
+			ctx.__locale = locale;
+			ctx.__localeOrigin = localeOrigin;
+			return String(locale);
+		};
 
-	(app.context as any).__getLocaleOrigin = function (): string {
-		if (this.__localeOrigin) return this.__localeOrigin;
-		this.__getLocale();
-		return this.__localeOrigin;
-	};
+	(app.context as Koa.Context & { [key: string]: unknown }).__getLocaleOrigin =
+		function (): string {
+			const ctx = this as Koa.Context & {
+				__localeOrigin?: string;
+				__getLocale?: () => string;
+			};
+			if (typeof ctx.__localeOrigin === "string" && ctx.__localeOrigin)
+				return ctx.__localeOrigin;
+			ctx.__getLocale?.();
+			return String(ctx.__localeOrigin ?? "");
+		};
 
-	(app.context as any).__setLocale = function (locale: string): void {
-		this.__locale = locale;
-		this.__localeOrigin = "set";
-		updateCookie(this, locale);
-	};
+	(app.context as Koa.Context & { [key: string]: unknown }).__setLocale =
+		function (locale: string): void {
+			const ctx = this as Koa.Context & {
+				__locale?: string;
+				__localeOrigin?: string;
+			};
+			ctx.__locale = locale;
+			ctx.__localeOrigin = "set";
+			updateCookie(ctx, locale);
+		};
 
 	function updateCookie(ctx: Koa.Context, locale: string): void {
 		const cookieOptions = {
@@ -304,16 +296,16 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 	}
 }
 
-function isObject(obj: any): boolean {
+function isObject(obj: unknown): obj is Record<string, unknown> {
 	return Object.prototype.toString.call(obj) === "[object Object]";
 }
 
 const ARRAY_INDEX_RE = /\{(\d+)\}/g;
-function formatWithArray(text: string, values: any[]): string {
+function formatWithArray(text: string, values: unknown[]): string {
 	return text.replace(ARRAY_INDEX_RE, (orignal, matched) => {
 		const index = parseInt(matched);
 		if (index < values.length) {
-			return values[index];
+			return String(values[index]);
 		}
 		// not match index, return orignal text
 		return orignal;
@@ -323,12 +315,12 @@ function formatWithArray(text: string, values: any[]): string {
 const Object_INDEX_RE = /\{(.+?)\}/g;
 function formatWithObject(
 	text: string,
-	values: { [key: string]: any },
+	values: { [key: string]: unknown },
 ): string {
 	return text.replace(Object_INDEX_RE, (orignal, matched) => {
 		const value = values[matched];
-		if (value) {
-			return value;
+		if (value !== undefined && value !== null) {
+			return String(value);
 		}
 		// not match index, return orignal text
 		return orignal;
@@ -340,12 +332,12 @@ function formatLocale(locale: string): string {
 	return locale.replace(/_/g, "-").toLowerCase();
 }
 
-function flattening(data: any): { [key: string]: string } {
+function flattening(data: Record<string, unknown>): { [key: string]: string } {
 	const result: { [key: string]: string } = {};
-	function deepFlat(data: any, keys: string): void {
+	function deepFlat(data: Record<string, unknown>, keys: string): void {
 		Object.keys(data).forEach((key) => {
 			const value = data[key];
-			const k = keys ? keys + "." + key : key;
+			const k = keys ? `${keys}.${key}` : key;
 			if (isObject(value)) {
 				deepFlat(value, k);
 			} else {
@@ -357,17 +349,22 @@ function flattening(data: any): { [key: string]: string } {
 	return result;
 }
 
-function appendDebugLog(message: string, obj?: any) {
+function appendDebugLog(message: string, obj?: unknown) {
 	const logPath = path.resolve(process.cwd(), "resource-debug.log");
 	let line = `[DEBUG] ${message}`;
 	if (obj !== undefined) {
 		try {
-			line += " " + JSON.stringify(obj);
+			line += ` ${JSON.stringify(obj)}`;
 		} catch {
-			line += " " + String(obj);
+			line += ` ${String(obj)}`;
 		}
 	}
-	fs.appendFileSync(logPath, line + "\n");
+	fs.appendFileSync(
+		logPath,
+		`${line}
+`,
+	);
 }
 
 export default locales;
+export type { LocalesOptions };

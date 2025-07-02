@@ -11,7 +11,7 @@ interface LocalesOptions {
     dirs?: string[];
     functionName?: string;
 }
-type GettextFunction = (locale: string, key: string, ...args: any[]) => string;
+type GettextFunction = (locale: string, key: string, ...args: unknown[]) => string;
 declare module "koa" {
     interface Context {
         __: GettextFunction;
@@ -25,3 +25,4 @@ declare module "koa" {
 }
 declare function locales(app: Koa, options?: LocalesOptions): void;
 export default locales;
+export type { LocalesOptions };
