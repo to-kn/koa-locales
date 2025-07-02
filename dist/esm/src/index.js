@@ -1,13 +1,13 @@
-const Debug = require("debug");
-const debug = Debug("koa-locales");
-const debugSilly = Debug("koa-locales:silly");
-const ini = require("ini");
-const util = require("util");
-const fs = require("fs");
-const path = require("path");
-const ms = require("humanize-ms").default || require("humanize-ms");
-const assign = require("object-assign");
-const yaml = require("js-yaml");
+import Debug from "debug";
+import fs from "fs";
+import { ms } from "humanize-ms";
+import ini from "ini";
+import yaml from "js-yaml";
+import { createRequire } from "module";
+import assign from "object-assign";
+import path from "path";
+import util from "util";
+
 const DEFAULT_OPTIONS = {
 	defaultLocale: "en-US",
 	queryField: "locale",
@@ -38,6 +38,10 @@ function locales(app, options = {}) {
 	if (localeDir && !localeDirs.includes(localeDir)) {
 		localeDirs.push(localeDir);
 	}
+	appendDebugLog("Starting resource loading");
+	throw new Error("Resource loader invoked");
+	// Loop through all directories, merging resources for the same locale
+	// Later directories override earlier ones
 	for (let i = 0; i < localeDirs.length; i++) {
 		const dir = localeDirs[i];
 		if (!fs.existsSync(dir)) {
@@ -50,17 +54,45 @@ function locales(app, options = {}) {
 			// support en_US.js => en-US.js
 			const locale = formatLocale(name.split(".")[0]);
 			let resource = {};
-			if (name.endsWith(".js") || name.endsWith(".json")) {
+			if (name.endsWith(".js")) {
+				const require = createRequire(import.meta.url);
+				const mod = require(filepath);
+				resource = flattening(mod.default || mod);
+				appendDebugLog(
+					`Loaded JS resource for locale '${locale}' from: ${filepath}`,
+					resource,
+				);
+			} else if (name.endsWith(".json")) {
+				// @ts-ignore
 				resource = flattening(require(filepath));
+				appendDebugLog(
+					`Loaded JSON resource for locale '${locale}' from: ${filepath}`,
+					resource,
+				);
 			} else if (name.endsWith(".properties")) {
 				resource = ini.parse(fs.readFileSync(filepath, "utf8"));
+				appendDebugLog(
+					`Loaded PROPERTIES resource for locale '${locale}' from: ${filepath}`,
+					resource,
+				);
 			} else if (name.endsWith(".yml") || name.endsWith(".yaml")) {
-				resource = flattening(yaml.safeLoad(fs.readFileSync(filepath, "utf8")));
+				resource = flattening(yaml.load(fs.readFileSync(filepath, "utf8")));
+				appendDebugLog(
+					`Loaded YAML resource for locale '${locale}' from: ${filepath}`,
+					resource,
+				);
 			}
-			resources[locale] = resources[locale] || {};
-			assign(resources[locale], resource);
+			// Always merge, but let later dirs override earlier ones
+			resources[locale] = { ...resources[locale], ...resource };
+			appendDebugLog(
+				`Merged resource for locale '${locale}'`,
+				resources[locale],
+			);
 		}
 	}
+	appendDebugLog("Finished resource loading");
+	const debug = Debug("koa-locales");
+	const debugSilly = Debug("koa-locales:silly");
 	debug(
 		"Init locales with %j, got %j resources",
 		options,
@@ -273,4 +305,16 @@ function flattening(data) {
 	deepFlat(data, "");
 	return result;
 }
-module.exports = locales;
+function appendDebugLog(message, obj) {
+	const logPath = path.resolve(process.cwd(), "resource-debug.log");
+	let line = `[DEBUG] ${message}`;
+	if (obj !== undefined) {
+		try {
+			line += " " + JSON.stringify(obj);
+		} catch {
+			line += " " + String(obj);
+		}
+	}
+	fs.appendFileSync(logPath, line + "\n");
+}
+export default locales;

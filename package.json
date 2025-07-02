@@ -1,48 +1,54 @@
 {
-	"name": "koa-locales",
-	"version": "1.12.0",
+	"name": "to-kn/koa-locales",
+	"version": "2.0.0",
 	"description": "koa locales, i18n solution for koa",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"type": "module",
+	"main": "./dist/esm/index.js",
+	"module": "./dist/esm/index.js",
+	"exports": {
+		"import": "./dist/esm/index.js",
+		"require": "./dist/esm/index.js"
+	},
+	"types": "./dist/types/index.d.ts",
 	"files": [
 		"dist/"
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint": "biome check .",
-		"format": "biome format . --write",
-		"test": "mocha -R spec -t 5000 test/*.test.js",
-		"cov": "istanbul cover _mocha -- -t 5000 test/*.test.js",
+		"lint": "biome check  --write .",
+		"test": "vitest run",
+		"test:ui": "vitest",
+		"cov": "vitest run --coverage",
 		"ci": "npm run lint && npm run cov",
 		"autod": "autod -w --prefix '^'",
 		"contributors": "contributors -f plain -o AUTHORS"
 	},
-	"dependencies": {
-		"debug": "^4.4.1",
-		"humanize-ms": "^2.0.0",
-		"ini": "^5.0.0",
-		"js-yaml": "^4.1.0",
-		"npminstall": "^7.12.0",
-		"object-assign": "^4.1.1"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.0.6",
-		"@types/koa": "^2.15.0",
-		"@types/node": "^24.0.8",
-		"autod": "3",
-		"beautify-benchmark": "^0.2.4",
-		"benchmark": "^2.1.4",
-		"contributors": "*",
-		"egg-ci": "^2.2.0",
-		"istanbul": "*",
-		"koa": "^3.0.0",
-		"mm": "^4.0.2",
-		"mocha": "11",
-		"pedding": "^2.0.1",
-		"supertest": "^7.1.1",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.8.3"
-	},
+  "dependencies": {
+    "debug": "^4.4.1",
+    "humanize-ms": "^2.0.0",
+    "ini": "^5.0.0",
+    "js-yaml": "^4.1.0",
+    "koa": "^3.0.0",
+    "mm": "^4.0.2",
+    "supertest": "^7.1.1",
+    "vitest": "^3.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
+    "@types/debug": "^4.1.12",
+    "@types/ini": "^4.1.1",
+    "@types/js-yaml": "^4.0.9",
+    "@types/koa": "^2.15.0",
+    "@types/node": "^24.0.10",
+    "@types/supertest": "^6.0.3",
+    "@vitest/coverage-istanbul": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "beautify-benchmark": "^0.2.4",
+    "benchmark": "^2.1.4",
+    "pedding": "^2.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
 	"homepage": "https://github.com/koajs/locales",
 	"repository": {
 		"type": "git",
@@ -60,7 +66,7 @@
 		"koa"
 	],
 	"engines": {
-		"node": ">=4.0.0"
+		"node": ">=18.0.0"
 	},
 	"ci": {
 		"version": "4, 6, 8, 10, 12"

@@ -1,13 +1,12 @@
 koa-locales
 =======
 
-**Now TypeScript-first!** Uses CommonJS, outputs to `dist/`, and is CI-tested on GitLab. Use the built output (`dist/index.js`) as the main entry point after running `npm run build`.
+**Now TypeScript-first, ESM, and Node.js 18+!**
+- Uses ESM (`import`/`export`), outputs to `dist/esm/`, and is CI-tested on GitHub Actions.
+- Use the built output (`dist/esm/index.js`) as the main entry point for consumers, but tests and development use the source (`src/`).
+- Modern test suite with [Vitest](https://vitest.dev/).
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][cov-image]][cov-url]
-[![David deps][david-image]][david-url]
-[![npm download][download-image]][download-url]
 
 koa locales, i18n solution for koa:
 
@@ -16,24 +15,46 @@ koa locales, i18n solution for koa:
 3. One api: `__(key[, value, ...])`.
 4. Auto detect request locale from `query`, `cookie` and `header: Accept-Language`.
 
+## Requirements
+
+- Node.js >= 18
+- ESM ("type": "module" in package.json)
+- TypeScript (for development)
+
 ## Installation
 
 ```bash
 $ npm install koa-locales --save
 ```
 
-## Quick start
+## Quick start (ESM/TypeScript)
 
 ```js
-const locales = require('./dist'); // after build
-const koa = require('koa');
+import locales from 'koa-locales';
+import Koa from 'koa';
 
-const app = koa();
+const app = new Koa();
 const options = {
   dirs: [__dirname + '/locales', __dirname + '/foo/locales'],
 };
 locales(app, options);
 ```
+
+## Development & Testing
+
+- Run tests with [Vitest](https://vitest.dev/):
+  ```sh
+  npm run test
+  ```
+- Lint and format with [Biome](https://biomejs.dev/):
+  ```sh
+  npm run lint
+  ```
+- Build TypeScript to ESM:
+  ```sh
+  npm run build
+  ```
+- CI runs on GitHub Actions (see `.github/workflows/`)
 
 ## API Reference
 
