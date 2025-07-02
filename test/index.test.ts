@@ -588,7 +588,7 @@ function createApp(options?: unknown) {
 				"fengmk2",
 				18,
 			),
-			empty: ctx[fname]("empty"),
+			empty: ctx[fname](),
 			notexists_key: ctx[fname]("key not exists"),
 			empty_string: ctx[fname](""),
 			empty_value: ctx[fname]("emptyValue"),

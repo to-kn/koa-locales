@@ -1,6 +1,5 @@
 Email: "le email"
 emptyValue: ""
-empty: ""
 Hello %s, how are you today?: "%s, Comment allez-vous"
 model:
   user:

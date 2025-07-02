@@ -151,8 +151,8 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 		);
 	}
 
-	function gettext(locale: string, key: string, ...args: unknown[]): string {
-		if (!key) return "";
+	function gettext(locale: string, key?: string, ...args: unknown[]): string {
+		if (!key || key === "") return "";
 		const resource = resources[locale] || {};
 		let text = resource[key];
 		if (typeof text !== "string") {
@@ -180,7 +180,7 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 	// Attach to app and context using proper Koa extension
 	(app as Koa & { [key: string]: unknown })[functionName] = gettext;
 	(app.context as Koa.Context & { [key: string]: unknown })[functionName] =
-		function (key: string, ...args: unknown[]): string {
+		function (key?: string, ...args: unknown[]): string {
 			const ctx = this as Koa.Context & { __getLocale?: () => string };
 			const locale = ctx.__getLocale ? ctx.__getLocale() : "";
 			return gettext(locale, key, ...args);

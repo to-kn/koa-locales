@@ -84,17 +84,14 @@ function locales(app, options = {}) {
         console.warn('[koa-locales] will override exists "%s" function on app', functionName);
     }
     function gettext(locale, key, ...args) {
-        if (!locale || !key)
+        if (!key || key === "")
             return "";
         const resource = resources[locale] || {};
         let text = resource[key];
         if (typeof text !== "string") {
-            text = String(text ?? "");
+            text = key;
         }
         debugSilly("%s: %j => %j", locale, key, text);
-        if (!text) {
-            return "";
-        }
         if (args.length === 0) {
             // __(locale, key)
             return text;
@@ -107,7 +104,7 @@ function locales(app, options = {}) {
             if (Array.isArray(value)) {
                 return formatWithArray(text, value);
             }
-            return util.format(text, String(value));
+            return util.format(text, value);
         }
         // __(locale, key, value1, ...)
         return util.format(text, ...args);
