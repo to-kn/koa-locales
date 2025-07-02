@@ -1,5 +1,6 @@
-koa-locales
-=======
+# koa-locales
+
+A modern i18n solution for Koa: [@to-kn/koa-locales](https://github.com/to-kn/koa-locales)
 
 **Now TypeScript-first, ESM, and Node.js 18+!**
 - Uses ESM (`import`/`export`), outputs to `dist/esm/`, and is CI-tested on GitHub Actions.
@@ -23,14 +24,14 @@ koa locales, i18n solution for koa:
 
 ## Installation
 
-```bash
-$ npm install koa-locales --save
+```sh
+npm install @to-kn/koa-locales
 ```
 
 ## Quick start (ESM/TypeScript)
 
 ```js
-import locales from 'koa-locales';
+import locales from '@to-kn/koa-locales';
 import Koa from 'koa';
 
 const app = new Koa();
