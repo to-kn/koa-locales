@@ -8,7 +8,7 @@ import ini from "ini";
 import yaml from "js-yaml";
 import type Koa from "koa";
 
-interface LocalesOptions {
+export interface LocalesOptions {
 	defaultLocale?: string;
 	queryField?: string;
 	cookieField?: string;
@@ -74,7 +74,6 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 		localeDirs.push(localeDir);
 	}
 
-	appendDebugLog("Starting resource loading");
 	// Loop through all directories, merging resources for the same locale
 	// Later directories override earlier ones
 	for (let i = 0; i < localeDirs.length; i++) {
@@ -93,25 +92,11 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 				const require = createRequire(import.meta.url);
 				const mod = require(filepath);
 				resource = flattening((mod.default || mod) as Record<string, unknown>);
-				appendDebugLog(
-					`Loaded JS/CJS resource for locale '${locale}' from: ${filepath}`,
-					resource,
-				);
 			} else if (name.endsWith(".json")) {
--				// @ts-ignore
--				resource = flattening(require(filepath) as Record<string, unknown>);
-+				const require = createRequire(import.meta.url);
-+				resource = flattening(require(filepath) as Record<string, unknown>);
-				appendDebugLog(
-					`Loaded JSON resource for locale '${locale}' from: ${filepath}`,
-					resource,
-				);
+				const require = createRequire(import.meta.url);
+				resource = flattening(require(filepath) as Record<string, unknown>);
 			} else if (name.endsWith(".properties")) {
 				resource = ini.parse(fs.readFileSync(filepath, "utf8"));
-				appendDebugLog(
-					`Loaded PROPERTIES resource for locale '${locale}' from: ${filepath}`,
-					resource,
-				);
 			} else if (name.endsWith(".yml") || name.endsWith(".yaml")) {
 				resource = flattening(
 					yaml.load(fs.readFileSync(filepath, "utf8")) as Record<
@@ -119,20 +104,11 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 						unknown
 					>,
 				);
-				appendDebugLog(
-					`Loaded YAML resource for locale '${locale}' from: ${filepath}`,
-					resource,
-				);
 			}
 			// Always merge, but let later dirs override earlier ones
 			resources[locale] = { ...resources[locale], ...resource };
-			appendDebugLog(
-				`Merged resource for locale '${locale}'`,
-				resources[locale],
-			);
 		}
 	}
-	appendDebugLog("Finished resource loading");
 
 	const debug = Debug("koa-locales");
 	const debugSilly = Debug("koa-locales:silly");
@@ -286,17 +262,16 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 		};
 
 	function updateCookie(ctx: Koa.Context, locale: string): void {
-function updateCookie(ctx: Koa.Context, locale: string): void {
-    const cookieOptions = {
-        httpOnly: true,
-        maxAge: cookieMaxAge,
-        signed: false,
-        domain: cookieDomain,
-        overwrite: true,
-    };
-    ctx.cookies.set(cookieField, locale, cookieOptions);
-    debugSilly("Saved cookie with locale %s", locale);
-}
+		const cookieOptions = {
+			httpOnly: false,
+			maxAge: cookieMaxAge,
+			signed: false,
+			domain: cookieDomain,
+			overwrite: true,
+		};
+		ctx.cookies.set(cookieField, locale, cookieOptions);
+		debugSilly("Saved cookie with locale %s", locale);
+	}
 }
 
 function isObject(obj: unknown): obj is Record<string, unknown> {
@@ -352,6 +327,4 @@ function flattening(data: Record<string, unknown>): { [key: string]: string } {
 	return result;
 }
 
-
 export default locales;
-export type { LocalesOptions };

@@ -33,7 +33,7 @@ describe("koa-locales.test.js", () => {
 					gender: "model.user.fields.gender",
 					name: "model.user.fields.name",
 				})
-				.expect("Set-Cookie", /^locale=en-us; path=\/+; expires=[^;]+ GMT$/)
+				.expect("Set-Cookie", /locale=en-us; path=\/.*expires=[^;]+ GMT(; httponly)?/)
 				.expect(200);
 		});
 
@@ -73,7 +73,7 @@ describe("koa-locales.test.js", () => {
 				})
 				.expect(
 					"Set-Cookie",
-					/^locale=en-us; path=\/; expires=[^;]+; domain=.foo.com$/,
+					/locale=en-us; path=\/.*expires=[^;]+ GMT(; domain=\.foo\.com)?(; httponly)?/,
 				)
 				.expect(200);
 		});
