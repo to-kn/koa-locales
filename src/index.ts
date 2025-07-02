@@ -98,8 +98,10 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 					resource,
 				);
 			} else if (name.endsWith(".json")) {
-				// @ts-ignore
-				resource = flattening(require(filepath) as Record<string, unknown>);
+-				// @ts-ignore
+-				resource = flattening(require(filepath) as Record<string, unknown>);
++				const require = createRequire(import.meta.url);
++				resource = flattening(require(filepath) as Record<string, unknown>);
 				appendDebugLog(
 					`Loaded JSON resource for locale '${locale}' from: ${filepath}`,
 					resource,
