@@ -2,26 +2,43 @@
 	"name": "to-kn/koa-locales",
 	"version": "2.0.0",
 	"description": "koa locales, i18n solution for koa",
+	"keywords": [
+		"koa-locales",
+		"i18n",
+		"locales",
+		"koa-i18n",
+		"koa"
+	],
+	"homepage": "https://github.com/to-kn/koa-locales",
+	"bugs": {
+		"url": "https://github.com/to-kn/koa-locales/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/to-kn/koa-locales.git",
+		"web": "https://github.com/to-kn/koa-locales"
+	},
+	"license": "MIT",
+	"author": "to-kn <t.knipping@tks.eu> (https://tks.eu)",
 	"type": "module",
-	"main": "./dist/esm/index.js",
-	"module": "./dist/esm/index.js",
 	"exports": {
 		"import": "./dist/esm/index.js",
 		"require": "./dist/esm/index.js"
 	},
+	"main": "./dist/esm/index.js",
+	"module": "./dist/esm/index.js",
 	"types": "./dist/types/index.d.ts",
 	"files": [
 		"dist/"
 	],
 	"scripts": {
 		"build": "tsc",
+		"ci": "npm run lint && npm run cov",
+		"contributors": "contributors -f plain -o AUTHORS",
+		"cov": "vitest run --coverage",
 		"lint": "biome check  --write .",
 		"test": "vitest run",
-		"test:ui": "vitest",
-		"cov": "vitest run --coverage",
-		"ci": "npm run lint && npm run cov",
-		"autod": "autod -w --prefix '^'",
-		"contributors": "contributors -f plain -o AUTHORS"
+		"test:ui": "vitest"
 	},
 	"dependencies": {
 		"debug": "^4.4.1",
@@ -29,9 +46,7 @@
 		"ini": "^5.0.0",
 		"js-yaml": "^4.1.0",
 		"koa": "^3.0.0",
-		"mm": "^4.0.2",
-		"supertest": "^7.1.1",
-		"vitest": "^3.2.4"
+		"mm": "^4.0.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.6",
@@ -42,35 +57,23 @@
 		"@types/node": "^24.0.10",
 		"@types/supertest": "^6.0.3",
 		"@vitest/coverage-istanbul": "^3.2.4",
+		"@vitest/coverage-v8": "^3.2.4",
 		"@vitest/ui": "^3.2.4",
 		"beautify-benchmark": "^0.2.4",
 		"benchmark": "^2.1.4",
-		"pedding": "^2.0.1",
+		"contributors": "^0.5.1",
+		"supertest": "^7.1.1",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"
 	},
-	"homepage": "https://github.com/koajs/locales",
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/koajs/locales.git",
-		"web": "https://github.com/koajs/locales"
-	},
-	"bugs": {
-		"url": "https://github.com/koajs/locales/issues"
-	},
-	"keywords": [
-		"koa-locales",
-		"i18n",
-		"locales",
-		"koa-i18n",
-		"koa"
-	],
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"ci": {
-		"version": "4, 6, 8, 10, 12"
-	},
-	"author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
-	"license": "MIT"
+	"vitest": {
+		"coverage": {
+			"include": ["src/**/*.{js,ts}"],
+			"exclude": ["benchmark/**/*", "test/**/*"],
+			"reporter": ["text", "lcov"]
+		}
+	}
 }
