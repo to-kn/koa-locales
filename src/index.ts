@@ -350,22 +350,6 @@ function flattening(data: Record<string, unknown>): { [key: string]: string } {
 	return result;
 }
 
-function appendDebugLog(message: string, obj?: unknown) {
-	const logPath = path.resolve(process.cwd(), "resource-debug.log");
-	let line = `[DEBUG] ${message}`;
-	if (obj !== undefined) {
-		try {
-			line += ` ${JSON.stringify(obj)}`;
-		} catch {
-			line += ` ${String(obj)}`;
-		}
-	}
-	fs.appendFileSync(
-		logPath,
-		`${line}
-`,
-	);
-}
 
 export default locales;
 export type { LocalesOptions };
