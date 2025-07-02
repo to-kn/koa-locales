@@ -1,5 +1,5 @@
 {
-	"name": "to-kn/koa-locales",
+	"name": "@to-kn/koa-locales",
 	"version": "2.0.0",
 	"description": "koa locales, i18n solution for koa",
 	"keywords": [
