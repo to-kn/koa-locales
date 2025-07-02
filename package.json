@@ -1,6 +1,6 @@
 {
 	"name": "@to-kn/koa-locales",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "koa locales, i18n solution for koa",
 	"keywords": [
 		"koa-locales",
@@ -23,7 +23,8 @@
 	"type": "module",
 	"exports": {
 		"import": "./dist/esm/index.js",
-		"require": "./dist/cjs/index.cjs"
+		"require": "./dist/cjs/index.cjs",
+		"types": "./dist/types/index.d.ts"
 	},
 	"main": "./dist/esm/index.js",
 	"module": "./dist/esm/index.js",
