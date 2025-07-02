@@ -1,13 +1,13 @@
 {
-  "Email": "郵箱",
-  "emptyValue": "",
-  "Hello %s, how are you today?": "%s，今天過得如何？",
-  "model": {
-    "user": {
-      "fields": {
-        "name": "姓名",
-        "gender": "性別"
-      }
-    }
-  }
+	"Email": "郵箱",
+	"emptyValue": "",
+	"Hello %s, how are you today?": "%s，今天過得如何？",
+	"model": {
+		"user": {
+			"fields": {
+				"name": "姓名",
+				"gender": "性別"
+			}
+		}
+	}
 }

@@ -1,63 +1,79 @@
 {
-  "name": "koa-locales",
-  "version": "1.12.0",
-  "description": "koa locales, i18n solution for koa",
-  "main": "index.js",
-  "files": [
-    "index.js"
-  ],
-  "scripts": {
-    "test": "eslint . && mocha -R spec -t 5000 test/*.test.js",
-    "cov": "istanbul cover _mocha -- -t 5000 test/*.test.js",
-    "lint": "eslint .",
-    "ci": "npm run lint && npm run cov",
-    "autod": "autod -w --prefix '^'",
-    "contributors": "contributors -f plain -o AUTHORS"
-  },
-  "dependencies": {
-    "debug": "^2.6.0",
-    "humanize-ms": "^1.2.0",
-    "ini": "^1.3.4",
-    "js-yaml": "^3.13.1",
-    "npminstall": "^3.23.0",
-    "object-assign": "^4.1.0"
-  },
-  "devDependencies": {
-    "autod": "2",
-    "beautify-benchmark": "^0.2.4",
-    "benchmark": "^2.1.3",
-    "contributors": "*",
-    "egg-ci": "^1.1.0",
-    "eslint": "1",
-    "istanbul": "*",
-    "koa": "^1.2.4",
-    "mm": "^2.0.0",
-    "mocha": "4",
-    "pedding": "^1.1.0",
-    "supertest": "^2.0.1"
-  },
-  "homepage": "https://github.com/koajs/locales",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/koajs/locales.git",
-    "web": "https://github.com/koajs/locales"
-  },
-  "bugs": {
-    "url": "https://github.com/koajs/locales/issues"
-  },
-  "keywords": [
-    "koa-locales",
-    "i18n",
-    "locales",
-    "koa-i18n",
-    "koa"
-  ],
-  "engines": {
-    "node": ">=4.0.0"
-  },
-  "ci": {
-    "version": "4, 6, 8, 10, 12"
-  },
-  "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
-  "license": "MIT"
+	"name": "@to-kn/koa-locales",
+	"version": "2.0.0",
+	"description": "koa locales, i18n solution for koa",
+	"keywords": [
+		"koa-locales",
+		"i18n",
+		"locales",
+		"koa-i18n",
+		"koa"
+	],
+	"homepage": "https://github.com/to-kn/koa-locales",
+	"bugs": {
+		"url": "https://github.com/to-kn/koa-locales/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/to-kn/koa-locales.git",
+		"web": "https://github.com/to-kn/koa-locales"
+	},
+	"license": "MIT",
+	"author": "to-kn <t.knipping@tks.eu> (https://tks.eu)",
+	"type": "module",
+	"exports": {
+		"import": "./dist/esm/index.js",
+		"require": "./dist/cjs/index.cjs"
+	},
+	"main": "./dist/esm/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
+	"files": [
+		"dist/"
+	],
+	"scripts": {
+		"build": "tsc",
+		"ci": "npm run lint && npm run cov",
+		"contributors": "contributors -f plain -o AUTHORS",
+		"cov": "vitest run --coverage",
+		"lint": "biome check  --write .",
+		"test": "vitest run",
+		"test:ui": "vitest"
+	},
+	"dependencies": {
+		"debug": "^4.4.1",
+		"humanize-ms": "^2.0.0",
+		"ini": "^5.0.0",
+		"js-yaml": "^4.1.0",
+		"koa": "^3.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.0.6",
+		"@types/debug": "^4.1.12",
+		"@types/ini": "^4.1.1",
+		"@types/js-yaml": "^4.0.9",
+		"@types/koa": "^2.15.0",
+		"@types/node": "^24.0.10",
+		"@types/supertest": "^6.0.3",
+		"@vitest/coverage-istanbul": "^3.2.4",
+		"@vitest/coverage-v8": "^3.2.4",
+		"@vitest/ui": "^3.2.4",
+		"beautify-benchmark": "^0.2.4",
+		"benchmark": "^2.1.4",
+		"contributors": "^0.5.1",
+		"mm": "^4.0.2",
+		"supertest": "^7.1.1",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"vitest": {
+		"coverage": {
+			"include": ["src/**/*.{js,ts}"],
+			"exclude": ["benchmark/**/*", "test/**/*"],
+			"reporter": ["text", "lcov"]
+		}
+	}
 }

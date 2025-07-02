@@ -1,11 +1,13 @@
-koa-locales
-=======
+# koa-locales
+
+A modern i18n solution for Koa: [@to-kn/koa-locales](https://github.com/to-kn/koa-locales)
+
+**Now TypeScript-first, ESM, and Node.js 18+!**
+- Uses ESM (`import`/`export`), outputs to `dist/esm/`, and is CI-tested on GitHub Actions.
+- Use the built output (`dist/esm/index.js`) as the main entry point for consumers, but tests and development use the source (`src/`).
+- Modern test suite with [Vitest](https://vitest.dev/).
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][cov-image]][cov-url]
-[![David deps][david-image]][david-url]
-[![npm download][download-image]][download-url]
 
 koa locales, i18n solution for koa:
 
@@ -14,24 +16,46 @@ koa locales, i18n solution for koa:
 3. One api: `__(key[, value, ...])`.
 4. Auto detect request locale from `query`, `cookie` and `header: Accept-Language`.
 
+## Requirements
+
+- Node.js >= 18
+- ESM ("type": "module" in package.json)
+- TypeScript (for development)
+
 ## Installation
 
-```bash
-$ npm install koa-locales --save
+```sh
+npm install @to-kn/koa-locales
 ```
 
-## Quick start
+## Quick start (ESM/TypeScript)
 
 ```js
-const koa = require('koa');
-const locales = require('koa-locales');
+import locales from '@to-kn/koa-locales';
+import Koa from 'koa';
 
-const app = koa();
+const app = new Koa();
 const options = {
   dirs: [__dirname + '/locales', __dirname + '/foo/locales'],
 };
 locales(app, options);
 ```
+
+## Development & Testing
+
+- Run tests with [Vitest](https://vitest.dev/):
+  ```sh
+  npm run test
+  ```
+- Lint and format with [Biome](https://biomejs.dev/):
+  ```sh
+  npm run lint
+  ```
+- Build TypeScript to ESM:
+  ```sh
+  npm run build
+  ```
+- CI runs on GitHub Actions (see `.github/workflows/`)
 
 ## API Reference
 
@@ -164,25 +188,14 @@ With this line it only will show one line per request, with the chosen language 
 ```sh
 $ DEBUG=koa-locales:silly node .
 ```
-Use this level if something doesn't work as you expect. This is going to debug everything, including each translated line of text.
 
-## License
+## Locale File Formats
 
-[MIT](LICENSE)
+You can provide locale files in the following formats:
 
+- `.json` (recommended for most use cases)
+- `.yml` or `.yaml`
+- `.properties`
+- `.cjs` (CommonJS JavaScript, e.g. `module.exports = { ... }`)
 
-[nunjucks]: https://www.npmjs.com/package/nunjucks
-[debug]: https://www.npmjs.com/package/debug
-[pug]: https://www.npmjs.com/package/pug
-[koa-pug]: https://www.npmjs.com/package/koa-pug
-
-[npm-image]: https://img.shields.io/npm/v/koa-locales.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/koa-locales
-[travis-image]: https://img.shields.io/travis/koajs/locales.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koajs/locales
-[cov-image]: https://codecov.io/github/koajs/locales/coverage.svg?branch=master
-[cov-url]: https://codecov.io/github/koajs/locales?branch=master
-[david-image]: https://img.shields.io/david/koajs/locales.svg?style=flat-square
-[david-url]: https://david-dm.org/koajs/locales
-[download-image]: https://img.shields.io/npm/dm/koa-locales.svg?style=flat-square
-[download-url]: https://npmjs.org/package/koa-locales
+> **Note:** `.js` ESM modules are not supported for synchronous loading. Use `.cjs` for JavaScript locale files if you need sync loading.
