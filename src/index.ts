@@ -89,12 +89,12 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 			// support en_US.js => en-US.js
 			const locale = formatLocale(name.split(".")[0]);
 			let resource: Resource = {};
-			if (name.endsWith(".js")) {
+			if (name.endsWith(".js") || name.endsWith(".cjs")) {
 				const require = createRequire(import.meta.url);
 				const mod = require(filepath);
 				resource = flattening((mod.default || mod) as Record<string, unknown>);
 				appendDebugLog(
-					`Loaded JS resource for locale '${locale}' from: ${filepath}`,
+					`Loaded JS/CJS resource for locale '${locale}' from: ${filepath}`,
 					resource,
 				);
 			} else if (name.endsWith(".json")) {

@@ -187,3 +187,14 @@ With this line it only will show one line per request, with the chosen language 
 ```sh
 $ DEBUG=koa-locales:silly node .
 ```
+
+## Locale File Formats
+
+You can provide locale files in the following formats:
+
+- `.json` (recommended for most use cases)
+- `.yml` or `.yaml`
+- `.properties`
+- `.cjs` (CommonJS JavaScript, e.g. `module.exports = { ... }`)
+
+> **Note:** `.js` ESM modules are not supported for synchronous loading. Use `.cjs` for JavaScript locale files if you need sync loading.
