@@ -284,16 +284,17 @@ function locales(app: Koa, options: LocalesOptions = {}): void {
 		};
 
 	function updateCookie(ctx: Koa.Context, locale: string): void {
-		const cookieOptions = {
-			httpOnly: false,
-			maxAge: cookieMaxAge,
-			signed: false,
-			domain: cookieDomain,
-			overwrite: true,
-		};
-		ctx.cookies.set(cookieField, locale, cookieOptions);
-		debugSilly("Saved cookie with locale %s", locale);
-	}
+function updateCookie(ctx: Koa.Context, locale: string): void {
+    const cookieOptions = {
+        httpOnly: true,
+        maxAge: cookieMaxAge,
+        signed: false,
+        domain: cookieDomain,
+        overwrite: true,
+    };
+    ctx.cookies.set(cookieField, locale, cookieOptions);
+    debugSilly("Saved cookie with locale %s", locale);
+}
 }
 
 function isObject(obj: unknown): obj is Record<string, unknown> {
