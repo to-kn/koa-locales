@@ -1,6 +1,6 @@
 {
 	"name": "@to-kn/koa-locales",
-	"version": "2.1.0",
+	"version": "2.1.2",
 	"description": "koa locales, i18n solution for koa",
 	"keywords": [
 		"koa-locales",
@@ -22,13 +22,13 @@
 	"author": "to-kn <t.knipping@tks.eu> (https://tks.eu)",
 	"type": "module",
 	"exports": {
-		"import": "./dist/esm/index.js",
-		"require": "./dist/cjs/index.cjs",
-		"types": "./dist/types/index.d.ts"
+		"import": "./dist/index.js",
+		"require": "./dist/cjs/index.js",
+		"types": "./dist/index.d.ts"
 	},
-	"main": "./dist/cjs/index.cjs",
-	"module": "./dist/esm/index.js",
-	"types": "./dist/types/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"dist/"
 	],
